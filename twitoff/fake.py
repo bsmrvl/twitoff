@@ -1,4 +1,4 @@
-"""Some predefined users and tweets."""
+"""Some predefined users and tweets.""" 
 
 from .models import User, Tweet
 
