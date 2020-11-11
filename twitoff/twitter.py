@@ -30,8 +30,10 @@ def add_update_user(username):
 
         for tweet in tweets:
             db_tweet = Tweet(id=tweet.id, text=tweet.full_text, vect=vectorize_tweet(tweet.full_text))
-            db_user.tweets.append(db_tweet)
-            DB.session.add(db_tweet)
+            no_exists = Tweet.query.filter(Tweet.id == tweet.id).first() is None
+            if no_exists:
+                db_user.tweets.append(db_tweet)
+                DB.session.add(db_tweet)
 
         DB.session.commit()
 
