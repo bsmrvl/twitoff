@@ -20,7 +20,7 @@ class Tweet(DB.Model):
     """Tweets Table - SQLAlchemy syntax"""
 
     id = DB.Column(DB.BigInteger, primary_key=True)
-    text = DB.Column(DB.Unicode(300))
+    text = DB.Column(DB.Unicode(400))
     vect = DB.Column(DB.PickleType, nullable=False)
     user = DB.relationship('User', backref=DB.backref('tweets', lazy=True))
     user_id = DB.Column(DB.BigInteger, DB.ForeignKey('user.id'), nullable=False)
