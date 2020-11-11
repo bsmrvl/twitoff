@@ -1,1 +1,1 @@
-web: flask run
+web: gunicorn twitoff:APP -t 120
