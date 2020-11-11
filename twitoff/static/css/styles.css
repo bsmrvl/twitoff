@@ -5,3 +5,62 @@ a {
 a:hover {
     text-decoration: underline;
 }
+
+.twocol {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 10px;
+}
+
+article {
+    margin: auto;
+    max-width: 600px;
+}
+
+.tweet {
+    font-size: 1.3em;
+    font-style: italic;
+}
+
+.center {
+    text-align: center;
+}
+
+.tinypad {
+    margin-top: 6px;
+}
+
+.button {
+    display: inline-block;
+    margin: auto;
+}
+
+#alert {
+    border-radius: 3px;
+    position: fixed;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    visibility: hidden;
+    padding: 30px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    background-color: rgba(0,0,0,.7);
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.attr {
+    color: lightgray;
+}
+.attr a {
+    color: lightgray;
+}

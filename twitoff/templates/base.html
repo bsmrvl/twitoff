@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 
 <html>
-
+  
   <head>
     <title>TwitOff - {{ title }}</title>
     <link rel="stylesheet" href="https://unpkg.com/picnic"/>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"/>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/chili.png') }}">
   </head>
 
   <body>
+    <div id='alert'></div>
+
     <nav>
-      <a href="/" class="brand"><span>TwitOff!</span></a>
+      <a href="/" class="brand"><span>TwitOff</span></a>
       <!-- responsive-->
       <input id="bmenub" type="checkbox" class="show">
       <label for="bmenub" class="burger pseudo button">Menu</label>
@@ -22,27 +25,71 @@
 
     <article class="" style="padding: 3em 1em;">
       {% block content %}
-        <h2>Users</h2>
-        <ul>
-          {% for user in users %}
-          <li><a href="/user/{{ user.name }}">{{ user.name }}</a></li>
-          {% endfor %}
-        </ul>
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            {% for message in messages %}
-              <script>alert('{{ message }}');</script>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+        <h2>Predict!</h2>
+        <form name="prediction" action="/prediction" method='post' onsubmit="return valPrediction()">
+          <div class='twocol'>
+            <select name='user1'>
+              <option value="" disabled selected>Choose User1</option>
+              {% for user in users %}
+                <option value="{{ user.name }}">{{ user.name }}</option>
+              {% endfor %}
+            </select>
+            <select name='user2'>
+              <option value="" disabled selected>Choose User2</option>
+              {% for user in users %}
+                <option value="{{ user.name }}">{{ user.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <input name='hypotweet' type="text" placeholder="Hypothetical tweet" class='tinypad'>
+          <button>Predict</button>
+        </form>
+        <br><br>
+
+        <h2>Add Users</h2>
+        <form action="/newuser" method='post'>
+          <input name="username" type="text" placeholder="New user">
+          <button>Add</button>
+        </form>
+        <script>history.replaceState('','','/');</script>
       {% endblock %}
-      <!-- <h2>Add user!</h2> -->
-      <form action="/newuser" method='post'>
-        <input name="username" type="text" style="width: 200px;" placeholder="New user">
-        <button id="adduser">Add</button>
-      </form>
     </article>
-    <script>history.replaceState('','','/');</script>
+    <footer>
+      <p class='attr'>Favicon by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons" target="_blank">Smashicons</a></p>
+    </footer>
+
+    <script>
+      var alertbox = document.getElementById('alert');
+
+      function flash(message){
+        alertbox.innerHTML = message;
+        alertbox.style.visibility = 'visible';
+        setTimeout(() => {
+          alertbox.style.visibility = 'hidden';
+        }, 2000);
+      }
+
+      function valPrediction(){
+        form = document.forms['prediction'];
+        var user1 = form['user1'].value;
+        var user2 = form['user2'].value;
+        var tweet = form['hypotweet'].value;
+        if (user1 == user2){
+          flash('Users must be different!');
+          return false;
+        } else if (!tweet){
+          flash('No empty tweets!');
+          return false;
+        }
+      }
+    </script>
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <script>
+          flash("{{ message }}");
+        </script>
+      {% endfor %}
+    {% endwith %} 
   </body>
 
 </html>

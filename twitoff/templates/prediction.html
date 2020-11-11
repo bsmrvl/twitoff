@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <br>
+  <div class="center">
+    <div class='tweet center'>"{{ tweet }}"</div>
+    <p class='center'>...is more likely to be said by <b><a href="user/{{ winner }}">{{ winner }}</a></b> than <b><a href="user/{{ loser }}">{{ loser }}</a></b>, with a {{ proba }}% probability.</p>
+    <a href='/' class="button">Predict Another</a>
+  </div>
+{% endblock %}

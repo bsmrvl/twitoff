@@ -1,37 +1,11 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
 
-<html>
-
-  <head>
-    <title>TwitOff - {{ title }}</title>
-    <link rel="stylesheet" href="https://unpkg.com/picnic"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}"/>
-  </head>
-
-  <body>
-    <nav>
-      <a href="/" class="brand"><span>TwitOff!</span></a>
-      <!-- responsive-->
-      <input id="bmenub" type="checkbox" class="show">
-      <label for="bmenub" class="burger pseudo button">Menu</label>
-      <div class="menu">
-        <a href="/update" class="button warning">Add Default Users</a>
-        <a href="/reset" class="button error">Reset Database</a>
-      </div>
-    </nav>
-
-    <article class="" style="padding: 3em 1em;">
-      {% block content %}
-        <h2>{{ user.name }}</h2>
-        <h3>Tweets</h3>
-        <ul>
-          {% for tweet in user.tweets %}
-          <li>{{ tweet.text }}</li>
-          {% endfor %}
-        </ul>
-      {% endblock %}
-    </article>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/umbrellajs"/> -->
-  </body>
-
-</html>
+{% block content %}
+  <h2>{{ user.name }}</h2>
+  <h3>Tweets</h3>
+  <ul>
+    {% for tweet in user.tweets %}
+    <li>{{ tweet.text }}</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
