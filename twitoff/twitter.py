@@ -5,14 +5,16 @@ import spacy
 import tweepy
 from .models import DB, Tweet, User
 
-nlp = spacy.load('my_model')
-def vectorize_tweet(text):
-    return nlp(text).vector
 
-TWITTER_AUTH = tweepy.OAuthHandler(getenv('TWITTER_API_KEY'), getenv('TWITTER_API_KEY_SECRET'))
+TWITTER_AUTH = tweepy.OAuthHandler(getenv('TWITTER_API_KEY'), 
+                                   getenv('TWITTER_API_KEY_SECRET'))
 TWITTER = tweepy.API(TWITTER_AUTH)
+nlp = spacy.load('my_model')
+
 
 def add_update_user(username):
+    """Attempt to add/update Twitter user, and return False if none exists."""
+    
     try:
         twit_user = TWITTER.get_user(username)
         db_user = User.query.get(twit_user.id) or User(id=twit_user.id, name=username)
@@ -29,14 +31,14 @@ def add_update_user(username):
             db_user.newest_tweet_id = tweets[0].id
 
         for tweet in tweets:
-            db_tweet = Tweet(id=tweet.id, text=tweet.full_text, vect=vectorize_tweet(tweet.full_text))
-            no_exists = Tweet.query.filter(Tweet.id == tweet.id).first() is None
-            if no_exists:
+            db_tweet = Tweet(id=tweet.id, text=tweet.full_text, vect=nlp(tweet.full_text).vector)
+            already = Tweet.query.filter(Tweet.id == tweet.id).first() is not None
+            if not already:
                 db_user.tweets.append(db_tweet)
                 DB.session.add(db_tweet)
 
         DB.session.commit()
+        return True
 
-    except Exception as e:
-        print('Error processing{}: {}'.format(username, e))
-        raise e
+    except:
+        return False

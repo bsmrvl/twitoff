@@ -28,6 +28,13 @@
           <li><a href="/user/{{ user.name }}">{{ user.name }}</a></li>
           {% endfor %}
         </ul>
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <script>alert('{{ message }}');</script>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
       {% endblock %}
       <!-- <h2>Add user!</h2> -->
       <form action="/newuser" method='post'>
@@ -35,31 +42,7 @@
         <button id="adduser">Add</button>
       </form>
     </article>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/umbrellajs"/> -->
-    <!-- <script>
-      // var newUser = document.getElementById('newuser');
-      // var addUser = document.getElementById('adduser');
-      // addUser.addEventListener('click', () => {
-      //   var call = new XMLHttpRequest();
-      //   call.open('POST','/new/' + newUser.value);
-        // call.onreadystatechange = function () {
-        //     if (call.readyState === 4) {
-        //         if (call.status === 200) {
-        //             onPlatter(call.responseText);
-        //             var histString = '/p/' + url + (link && ('-/' + link));
-        //             fromhist 
-        //                 ? window.history.replaceState('hist','',histString)
-        //                 : window.history.pushState('new','',histString);
-        //             linkElement && (linkElement.style.cursor = '');
-        //         } else {
-        //             console.log('Error: ' + call.status);
-        //         }
-        //     }
-        // };
-        call.send();
-        // window.location.assign('http://localhost:5000/user/' + newUser.value)
-      });
-    </script> -->
+    <script>history.replaceState('','','/');</script>
   </body>
 
 </html>
