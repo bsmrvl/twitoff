@@ -11,7 +11,7 @@ TWITTER_AUTH = tweepy.OAuthHandler(getenv('TWITTER_API_KEY'),
                                    getenv('TWITTER_API_KEY_SECRET'))
 TWITTER = tweepy.API(TWITTER_AUTH)
 # nlp = pickle.load(open('nlp_pickle', 'rb'))
-nlp = spacy.load('en_core_web_sm')
+nlp = spacy.load('nlp_model')
 
 
 def add_update_user(username):
