@@ -10,7 +10,7 @@ from .models import DB, Tweet, User
 TWITTER_AUTH = tweepy.OAuthHandler(getenv('TWITTER_API_KEY'), 
                                    getenv('TWITTER_API_KEY_SECRET'))
 TWITTER = tweepy.API(TWITTER_AUTH)
-nlp = pickle.load(open('nlpmodel', 'rb'))
+nlp = pickle.load(open('nlp_pickle', 'rb'))
 
 
 def add_update_user(username):
