@@ -1,7 +1,7 @@
 """Functions for connecting to Twitter API, retrieving tweets, and vectorizing them."""
 
 from os import getenv
-# import pickle
+import pickle
 import spacy
 import tweepy
 from .models import DB, Tweet, User
@@ -10,8 +10,8 @@ from .models import DB, Tweet, User
 TWITTER_AUTH = tweepy.OAuthHandler(getenv('TWITTER_API_KEY'), 
                                    getenv('TWITTER_API_KEY_SECRET'))
 TWITTER = tweepy.API(TWITTER_AUTH)
-# nlp = pickle.load(open('nlp_pickle', 'rb'))
-nlp = spacy.load('nlp_model')
+nlp = pickle.load(open('final_pickle', 'rb'))
+# nlp = spacy.load('nlp_model')
 
 
 def add_update_user(username):
