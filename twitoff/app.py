@@ -2,7 +2,7 @@
 
 from os import getenv
 from flask import Flask, render_template, flash, request
-from .models import DB, User
+from .models import DB, User, Tweet
 from .twitter import add_update_user
 from .prediction import predict_user
 
@@ -52,7 +52,9 @@ def create_app():
             if n_tweets == -1:
                 flash(f"{username} doesn't exist!")
             elif n_tweets >= 0 and n_tweets < 20:
-                User.query.filter(User.name==username).delete()
+                user = User.query.filter(User.name==username).one()
+                Tweet.query.filter(Tweet.user==user).delete()
+                DB.session.delete(user)
                 DB.session.commit()
                 flash(f'{username} has less than 20 tweets! Removed.')
             else:
