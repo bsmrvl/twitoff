@@ -2,13 +2,9 @@
 
 from os import getenv
 from flask import Flask, render_template, flash, request
-from .models import DB, User, Tweet
+from .models import DB, User
 from .twitter import add_update_user
 from .prediction import predict_user
-
-
-def get_user(username):
-    return User.query.filter(User.name==username).first()
 
 
 def create_app():
@@ -20,63 +16,95 @@ def create_app():
 
     @app.route('/')
     def root():
-        return render_template('base.html', title='Home',
-                               users=User.query.order_by(User.name))
+        """Home page."""
+        return render_template(
+            'base.html',
+            title='Home',
+            users=User.query.order_by(User.name)
+        )
 
     @app.route('/prediction', methods=['POST'])
     def predict():
-        username1 = request.form.get('user1')
-        username2 = request.form.get('user2')
+        """Get form data and display prediction."""
+        username0 = request.form.get('user1')
+        username1 = request.form.get('user2')
         hypo_tweet = request.form.get('hypotweet')
 
-        prediction, probas = predict_user(username1, username2, hypo_tweet)
-        winner = username2 if prediction else username1
-        loser = username1 if prediction else username2
+        prediction, probas = predict_user(username0, username1, hypo_tweet)
+        winner = username1 if prediction else username0
+        loser = username0 if prediction else username1
         proba = round(probas[prediction]*100)
-        return render_template('prediction.html', title='Prediction',
-                                winner=winner, loser=loser, tweet=hypo_tweet, proba=proba)
+
+        return render_template(
+            'prediction.html', 
+            title='Prediction',
+            winner=winner, loser=loser, tweet=hypo_tweet, proba=proba
+        )
 
     @app.route('/newuser', methods=['POST'])
     def adduser():
+        """Add or update tweets for specified user."""
         username = request.form.get('username')
-        if get_user(username) is None:
+
+        # Add.
+        if User.query.filter(User.name==username).first() is None:
             n_tweets = add_update_user(username)
             if n_tweets == -1:
-                flash('No such user!')
+                flash(f"{username} doesn't exist!")
             elif n_tweets >= 0 and n_tweets < 20:
                 User.query.filter(User.name==username).delete()
                 DB.session.commit()
-                flash('User has less than 20 tweets! Removed.')
+                flash(f'{username} has less than 20 tweets! Removed.')
             else:
-                flash('User added with {} tweets.'.format(n_tweets))
+                flash(f'{username} added, with {n_tweets} tweets.')
+
+        # Update.
         else:
             n_tweets = add_update_user(username)
-            flash('User updated with {} new tweets.'.format(n_tweets))
-        return render_template('base.html', title='Home',
-                               users=User.query.order_by(User.name))
+            flash(f'{username} updated, with {n_tweets} new tweets.')
+
+        return render_template(
+            'base.html', 
+            title='Home',
+            users=User.query.order_by(User.name)
+        )
 
     @app.route('/user/<username>')
     def user(username):
-        user = get_user(username)
-        return render_template('user.html', title=username,
-                               user=user)
+        """Display list of tweets for specified user in our database."""
+        user = User.query.filter(User.name==username).first()
+
+        return render_template(
+            'user.html', 
+            title=username,
+            user=user
+        )
 
     @app.route('/update')
     def update():
+        """Add new tweets for all users in our database."""
         update_string = ''
         for user in User.query.all():
             n_tweets = add_update_user(user.name)
             if n_tweets > 0:
-                update_string = update_string + '<br>{} had {} new tweets.'.format(user.name,
-                                                                                   n_tweets)
+                update_string = f'{update_string}<br>{user.name} had {n_tweets} new tweets.'
         flash('All users updated!' + update_string)
-        return render_template('base.html', title='Home', 
-                               users=User.query.order_by(User.name))
+
+        return render_template(
+            'base.html', 
+            title='Home', 
+            users=User.query.order_by(User.name)
+        )
 
     @app.route('/reset')
     def reset():
+        """Delete all users/tweets from our database."""
         DB.drop_all()
         DB.create_all()
-        return render_template('base.html', title='Home')
+
+        return render_template(
+            'base.html', 
+            title='Home'
+        )
 
     return app

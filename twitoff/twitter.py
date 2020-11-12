@@ -1,4 +1,4 @@
-"""Retrieve tweets and users, then create embeddings to populate DB."""
+"""Functions for connecting to Twitter API, retrieving tweets, and vectorizing them."""
 
 from os import getenv
 import spacy
@@ -13,11 +13,11 @@ nlp = spacy.load('my_model')
 
 
 def add_update_user(username):
-    """Attempt to add/update Twitter user, and return False if none exists."""
-    
+    """Attempt to add/update Twitter user, and return number of new tweets (-1 if no user exists)."""
     try:
         twit_user = TWITTER.get_user(username)
-        db_user = User.query.get(twit_user.id) or User(id=twit_user.id, name=username)
+        db_user = User.query.get(twit_user.id) \
+                  or User(id=twit_user.id, name=username)
         DB.session.add(db_user)
 
         tweets = twit_user.timeline(
@@ -32,11 +32,14 @@ def add_update_user(username):
             db_user.newest_tweet_id = tweets[0].id
 
         for tweet in tweets:
-            db_tweet = Tweet(id=tweet.id, text=tweet.full_text, vect=nlp(tweet.full_text).vector)
-            already = Tweet.query.filter(Tweet.id == tweet.id).first() is not None
-            if not already:
-                db_user.tweets.append(db_tweet)
-                DB.session.add(db_tweet)
+            t_text = tweet.full_text
+            db_tweet = Tweet(
+                id=tweet.id, 
+                text=t_text, 
+                vect=nlp(t_text).vector
+            )
+            db_user.tweets.append(db_tweet)
+            DB.session.add(db_tweet)
 
         DB.session.commit()
         

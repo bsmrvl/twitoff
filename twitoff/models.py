@@ -1,4 +1,4 @@
-"""SQLAlchemy models and utility functions for Twitoff Application"""
+"""SQLAlchemy models for Twitoff App."""
 
 from flask_sqlalchemy import SQLAlchemy
 
@@ -7,7 +7,6 @@ DB = SQLAlchemy()
 
 class User(DB.Model):
     """User Table - SQLAlchemy syntax"""
-
     id = DB.Column(DB.BigInteger, primary_key=True)
     name = DB.Column(DB.String, nullable=False)
     newest_tweet_id = DB.Column(DB.BigInteger)
@@ -18,7 +17,6 @@ class User(DB.Model):
 
 class Tweet(DB.Model):
     """Tweets Table - SQLAlchemy syntax"""
-
     id = DB.Column(DB.BigInteger, primary_key=True)
     text = DB.Column(DB.Unicode(400))
     vect = DB.Column(DB.PickleType, nullable=False)

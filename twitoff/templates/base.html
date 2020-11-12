@@ -51,7 +51,9 @@
           <input name="username" type="text" placeholder="New user">
           <button>Add</button>
         </form>
-        <script>history.replaceState('','','/');</script>
+        <!-- <script>
+          history.replaceState('','{{ hist_state }}','/');
+        </script> -->
       {% endblock %}
     </article>
     <footer>
@@ -60,17 +62,16 @@
 
     <script>
       var alertbox = document.getElementById('alert');
-
-      function hideAlert(){
-        alertbox.style.visibility = 'hidden';
-      }
+      var timer;
 
       function flash(message){
         console.log(message);
         alertbox.innerHTML = message;
         alertbox.style.visibility = 'visible';
-        clearTimeout(hideAlert);
-        setTimeout(hideAlert, 2000);
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          alertbox.style.visibility = 'hidden';
+        }, 2000);
       }
 
       function valPrediction(){
@@ -78,6 +79,10 @@
         var user1 = form['user1'].value;
         var user2 = form['user2'].value;
         var tweet = form['hypotweet'].value;
+        if (user1 == '' || user2 == ''){
+          flash('Select a user.');
+          return false;
+        }
         if (user1 == user2){
           flash('Users must be different!');
           return false;
