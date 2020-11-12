@@ -24,7 +24,8 @@ def add_update_user(username):
             count=200,
             exclude_replies=True,
             include_rts=False,
-            tweet_mode='extended'
+            tweet_mode='extended',
+            since_id=db_user.newest_tweet_id
         )
 
         if tweets:
@@ -34,11 +35,15 @@ def add_update_user(username):
             db_tweet = Tweet(id=tweet.id, text=tweet.full_text, vect=nlp(tweet.full_text).vector)
             already = Tweet.query.filter(Tweet.id == tweet.id).first() is not None
             if not already:
-                db_user.tweets.append(db_tweet)
+                db_user.tweets.insert(0, db_tweet)
                 DB.session.add(db_tweet)
 
         DB.session.commit()
-        return True
+        
+        if tweets:
+            return len(tweets)
+        else:
+            return 0
 
     except:
-        return False
+        return -1

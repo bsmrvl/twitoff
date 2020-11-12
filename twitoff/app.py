@@ -7,6 +7,10 @@ from .twitter import add_update_user
 from .prediction import predict_user
 
 
+def get_user(username):
+    return User.query.filter(User.name==username).first()
+
+
 def create_app():
     app = Flask(__name__)
     app.secret_key = getenv('APP_KEY_SECRET')
@@ -25,17 +29,6 @@ def create_app():
         username2 = request.form.get('user2')
         hypo_tweet = request.form.get('hypotweet')
 
-        # def retry():
-        #     return render_template('base.html', title='Home',
-        #                            users=User.query.order_by(User.name))
-
-        # if username1 == username2:
-        #     flash("Users must be different!")
-        #     return retry()
-        # elif not hypo_tweet:
-        #     flash("Hypothetical tweet can't be empty.")
-        #     return retry()
-        # else:
         prediction, probas = predict_user(username1, username2, hypo_tweet)
         winner = username2 if prediction else username1
         loser = username1 if prediction else username2
@@ -47,13 +40,18 @@ def create_app():
     def adduser():
         username = request.form.get('username')
         if get_user(username) is None:
-            exists = add_update_user(username)
-            if not exists:
+            n_tweets = add_update_user(username)
+            if n_tweets == -1:
                 flash('No such user!')
+            elif n_tweets >= 0 and n_tweets < 20:
+                User.query.filter(User.name==username).delete()
+                DB.session.commit()
+                flash('User has less than 20 tweets! Removed.')
             else:
-                flash('User added!')
+                flash('User added with {} tweets.'.format(n_tweets))
         else:
-            flash('User already here!')
+            n_tweets = add_update_user(username)
+            flash('User updated with {} new tweets.'.format(n_tweets))
         return render_template('base.html', title='Home',
                                users=User.query.order_by(User.name))
 
@@ -65,8 +63,13 @@ def create_app():
 
     @app.route('/update')
     def update():
-        insert_example_users()
-        flash('Users added!')
+        update_string = ''
+        for user in User.query.all():
+            n_tweets = add_update_user(user.name)
+            if n_tweets > 0:
+                update_string = update_string + '<br>{} had {} new tweets.'.format(user.name,
+                                                                                   n_tweets)
+        flash('All users updated!' + update_string)
         return render_template('base.html', title='Home', 
                                users=User.query.order_by(User.name))
 
@@ -77,13 +80,3 @@ def create_app():
         return render_template('base.html', title='Home')
 
     return app
-
-
-def get_user(username):
-    return User.query.filter(User.name==username).first()
-
-
-def insert_example_users():
-    add_update_user('webdevMason')
-    add_update_user('tylerthecreator')
-    add_update_user('bensomer_ville')

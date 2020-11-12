@@ -18,7 +18,7 @@
       <input id="bmenub" type="checkbox" class="show">
       <label for="bmenub" class="burger pseudo button">Menu</label>
       <div class="menu">
-        <a href="/update" class="button warning">Add Default Users</a>
+        <a href="/update" class="button warning">Update All Users</a>
         <a href="/reset" class="button error">Reset Database</a>
       </div>
     </nav>
@@ -61,12 +61,16 @@
     <script>
       var alertbox = document.getElementById('alert');
 
+      function hideAlert(){
+        alertbox.style.visibility = 'hidden';
+      }
+
       function flash(message){
+        console.log(message);
         alertbox.innerHTML = message;
         alertbox.style.visibility = 'visible';
-        setTimeout(() => {
-          alertbox.style.visibility = 'hidden';
-        }, 2000);
+        clearTimeout(hideAlert);
+        setTimeout(hideAlert, 2000);
       }
 
       function valPrediction(){
@@ -83,13 +87,15 @@
         }
       }
     </script>
-    {% with messages = get_flashed_messages() %}
-      {% for message in messages %}
-        <script>
-          flash("{{ message }}");
-        </script>
-      {% endfor %}
-    {% endwith %} 
+    {% autoescape false %}
+      {% with ms = get_flashed_messages() %}
+        {% for m in ms %}
+          <script>
+            flash("{{ m }}");
+          </script>
+        {% endfor %}
+      {% endwith %} 
+    {% endautoescape %}
   </body>
 
 </html>
