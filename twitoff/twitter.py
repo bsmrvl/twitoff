@@ -2,6 +2,7 @@
 
 from os import getenv
 import pickle
+import spacy
 import tweepy
 from .models import DB, Tweet, User
 
