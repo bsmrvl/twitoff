@@ -35,7 +35,7 @@ def add_update_user(username):
             db_tweet = Tweet(id=tweet.id, text=tweet.full_text, vect=nlp(tweet.full_text).vector)
             already = Tweet.query.filter(Tweet.id == tweet.id).first() is not None
             if not already:
-                db_user.tweets.insert(0, db_tweet)
+                db_user.tweets.append(db_tweet)
                 DB.session.add(db_tweet)
 
         DB.session.commit()

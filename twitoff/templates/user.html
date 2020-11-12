@@ -4,7 +4,7 @@
   <h2>{{ user.name }}</h2>
   <h3>Tweets</h3>
   <ul>
-    {% for tweet in user.tweets %}
+    {% for tweet in user.tweets|sort(attribute='id', reverse=true) %}
     <li>{{ tweet.text }}</li>
     {% endfor %}
   </ul>
