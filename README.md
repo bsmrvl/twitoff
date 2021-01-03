@@ -1,2 +1,2 @@
 # twitoff
-Flask web application to compare Twitter users.
+Flask web application to compare Twitter users. Test.
